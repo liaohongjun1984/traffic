@@ -1,0 +1,18 @@
+.main>.header{height:88px;border-bottom:3px solid #CFE4CF;}
+.main > .header .tip{bottom:4px;}
+.main > .header .logo{margin-top:22px;position:relative;width:360px;}
+.main > .header .logo span.pic{width:60px;height:53px;}
+.main > .header .logo span.pic img{height:53px;margin:0;}
+.main > .header .logo span.text{left: 54px;}
+
+h2{font-size:14px;color:#BF2200;height:36px;line-height:36px;}
+.post{height:26px;line-height:26px;background:#FAFAFA;border-radius:5px;margin:12px 0;}
+.post .bold{font-weight:bold;color:#BF2200;padding:12px;}
+
+#box-login .cont .bottom{height:22px;line-height:22px;padding:10px 6px;text-align:right; background:#EEEEEE;border-top:1px solid #ccc;}
+#box-login td,#box-login th{padding:12px 6px;}
+#box-login .form input{width:202px;}
+
+.box-tips{background:#FAFAFA;line-height:30px;border-radius:5px;padding:12px;}
+
+.err-tips{margin:-20px 0 20px 118px;padding:12px;background:#FFCCCC;border:1px solid #CC0000;border-radius:2px;display:inline-block;}

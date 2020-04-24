@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”-->
+<mapper namespace="com.devops.suc.dao.QueueConfigDao">
+	
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+	<select id="get" resultType="queueConfig" parameterType="int" >
+		<![CDATA[select * from queue_config where server_id=#{server_id} ]]>
+	</select>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- "namespace" must be the path of interface, or show error “is not known to the MapperRegistry” when launch -->
+<mapper namespace="com.devops.suc.dao.TpViolationActionDao">
+	
+	<!-- "id" must be as same as method name of the interface -->
+	<select id="list" resultType="TpViolationActionVO" parameterType="TpViolationActionSearchVO" useCache="false">
+		<![CDATA[select * from tp_violation_action ]]>
+		<where>
+			<if test="v_id != null and v_id != ''" >
+						<![CDATA[ v_id like CONCAT(CONCAT('%', #{v_id}),'%') ]]>
+					</if>
+			<if test="action_name != null and action_name != ''" >
+						<![CDATA[ AND action_name like CONCAT(CONCAT('%', #{action_name}),'%') ]]>
+					</if>
+			<if test="action_id != null and v_id != ''" >
+						<![CDATA[ AND action_id = #{action_id} ]]>
+					</if>
+
+		</where>
+				ORDER BY v_id DESC 
+		<![CDATA[ LIMIT #{start} , #{size}  ]]>
+	</select>
+	
+	<select id="listAll" resultType="TpViolationActionVO" useCache="false">
+		<![CDATA[select * from tp_violation_action ORDER BY v_id DESC ]]>
+	</select>
+	
+	<select id="listByRoadId" resultType="TpViolationActionVO" useCache="false">
+		<![CDATA[select * from tp_violation_action where v_id in (select action_id from road_action_relation where road_id=#{0})]]>
+	</select>
+	
+	<select id="count" resultType="int" parameterType="TpViolationActionSearchVO" useCache="false">
+		<![CDATA[select count(*) as num from tp_violation_action ]]>
+		<where>
+			<if test="v_id != null and v_id != ''" >
+						<![CDATA[ v_id like CONCAT(CONCAT('%', #{v_id}),'%') ]]>
+					</if>
+			<if test="action_name != null and action_name != ''" >
+							<![CDATA[ AND action_name like CONCAT(CONCAT('%', #{action_name}),'%') ]]>
+								
+			</if>
+		</where>
+	</select>
+	
+	<select id="getVO" resultType="TpViolationActionVO" parameterType="int" useCache="true">
+		<![CDATA[
+			select tva.*,rar.road_id from tp_violation_action tva,road_action_relation rar where tva.v_id = #{v_id} and rar.action_id=#{v_id}
+		]]>
+	</select>
+	
+	<select id="get" resultType="TpViolationAction" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from tp_violation_action where v_id = #{v_id}
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="TpViolationAction" flushCache="true">
+		<![CDATA[
+		insert into tp_violation_action set 
+						action_name=#{action_name},
+						action_id=#{action_id}
+					]]>
+		<selectKey resultType="int" keyProperty="v_id" order="AFTER"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS v_id ]]>   
+	    </selectKey> 
+	</insert>
+    
+	<update id="update" parameterType="TpViolationAction" flushCache="true">
+		<![CDATA[
+		update tp_violation_action set
+						action_name=#{action_name},
+						action_id=#{action_id}
+					where v_id = #{v_id}
+		]]>
+	</update>
+    
+	<delete id="delete" parameterType="int" flushCache="true">
+		<![CDATA[
+			DELETE FROM tp_violation_action WHERE v_id = #{v_id}
+		]]>
+	</delete>
+</mapper>

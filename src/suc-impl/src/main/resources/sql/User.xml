@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”-->
+<mapper namespace="com.devops.suc.dao.UserDao">
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+	<select id="list" resultType="userVO" parameterType="userSearchVO">
+		<![CDATA[select * from user where user_name != 'admin ' and del_flag=0]]>
+		<!-- 
+		<where>
+		 -->
+			<if test="user_name != null and user_name != ''" >
+		         <![CDATA[and user_name like CONCAT('%',#{user_name},'%')]]>
+		     </if>
+			<if test="nick_name != null and nick_name != ''" >
+		         <![CDATA[and nick_name like CONCAT('%',#{nick_name},'%') ]]>
+		    </if>
+		    <!-- 
+	    </where>
+	     -->
+	    order by last_modify desc limit #{start},#{size}
+	</select>
+	<select id="listCount" resultType="int" parameterType="userSearchVO">
+		<![CDATA[select count(*) as num from user where user_name != 'admin '  and del_flag=0]]>
+		<!-- 
+		<where>
+		 -->
+			<if test="user_name != null and user_name != ''" >
+		         <![CDATA[ and user_name like CONCAT('%',#{user_name},'%')]]>
+		     </if>
+			<if test="nick_name != null and nick_name != ''" >
+		         <![CDATA[and nick_name like CONCAT('%',#{nick_name},'%') ]]>
+		    </if>
+		    <!-- 
+	    </where>
+	     -->
+	</select>	
+	
+	<select id="getUserByRoleId" resultType="user" parameterType="row">
+		<![CDATA[select * from user where user_id in (select user_id from user_role_relation where role_id = #{role_id}) and user_name!='admin' ]]>
+		
+			<if test="user_name != null and user_name != ''" >
+		         <![CDATA[and user_name like CONCAT('%',#{user_name},'%')]]>
+		     </if>
+			<if test="nick_name != null and nick_name != ''" >
+		         <![CDATA[and nick_name like CONCAT('%',#{nick_name},'%')]]>
+		     </if>
+	    
+		limit #{start},#{size}
+	</select>
+	
+	<select id="getUserNotinRoleId" resultType="user" parameterType="row">
+		<![CDATA[select * from user where user_id not in (select user_id from user_role_relation where role_id = #{role_id})]]>
+		
+			<if test="user_name != null and user_name != ''" >
+		         <![CDATA[and user_name like CONCAT('%',#{user_name},'%')]]>
+		     </if>
+			<if test="nick_name != null and nick_name != ''" >
+		         <![CDATA[and nick_name like CONCAT('%',#{nick_name},'%')]]>
+		     </if>
+	    
+	</select>
+	
+	<select id="getUserNotinGroupId" resultType="user" parameterType="row">
+		<![CDATA[select * from user where user_id not in (select user_id from user_group_relation where group_id = #{group_id})]]>
+		
+			<if test="user_name != null and user_name != ''" >
+		         <![CDATA[and user_name like CONCAT('%',#{user_name},'%')]]>
+		     </if>
+			<if test="nick_name != null and nick_name != ''" >
+		         <![CDATA[and nick_name like CONCAT('%',#{nick_name},'%')]]>
+		     </if>
+	    
+	</select>
+	
+	<select id="countUserByRoleId" resultType="int" parameterType="row">
+		<![CDATA[select count(*) from user where user_id in (select user_id from user_role_relation where role_id = #{role_id})]]>
+		
+			<if test="user_name != null and user_name != ''" >
+		         <![CDATA[and user_name like CONCAT('%',#{user_name},'%')]]>
+		     </if>
+		     <if test="nick_name != null and nick_name != ''" >
+		         <![CDATA[and nick_name like CONCAT('%',#{nick_name},'%')]]>
+		     </if>
+	    
+	</select>	
+	
+	<delete id="delete" parameterType="int">
+		update user set del_flag=1 where user_id=#{user_id}
+	</delete>
+</mapper>

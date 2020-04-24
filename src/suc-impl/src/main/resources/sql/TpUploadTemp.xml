@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- "namespace" must be the path of interface, or show error “is not known to the MapperRegistry” when launch -->
+<mapper namespace="com.devops.suc.dao.TpUploadTempDao">
+	
+	<!-- "id" must be as same as method name of the interface -->
+	<select id="list" resultType="TpUploadTempVO" parameterType="TpUploadTempSearchVO" useCache="false">
+		<![CDATA[select * from tp_upload_temp ]]>
+		<where>
+			<if test="user_id != null and user_id != ''" >
+				<![CDATA[ user_id = #{user_id} ]]>
+			</if>
+			<if test="user_name != null and user_name != ''" >
+				<![CDATA[AND user_name like CONCAT(CONCAT('%', #{user_name}),'%') ]]>
+			</if>
+			<if test="file_status != null" >
+				<![CDATA[AND file_status = #{file_status} ]]>
+			</if>
+			<if test="road_id != null and road_id != ''" >
+				<![CDATA[AND road_id = #{road_id} ]]>
+			</if>
+		</where>
+				ORDER BY create_time ASC
+		<![CDATA[ LIMIT #{start}, #{size}]]>
+	</select>
+	<select id="listAll" resultType="TpUploadTempVO" useCache="false">
+		<![CDATA[select * from tp_upload_temp ]]>
+	</select>
+	
+	
+	<select id="Downlist" resultType="TpUploadTempVO" parameterType="TpUploadTempSearchVO" useCache="false">
+		<![CDATA[select * from tp_upload_temp ]]>
+		<where>
+			<if test="user_id != null and user_id != ''" >
+				<![CDATA[ user_id = #{user_id} ]]>
+			</if>
+			<if test="file_status != null" >
+				<![CDATA[AND file_status != 0 ]]>
+			</if>
+			<if test="road_id != null and road_id != ''" >
+				<![CDATA[AND check_road_id = #{road_id} ]]>
+			</if>
+		</where>
+				ORDER BY deal_time DESC
+		<![CDATA[ LIMIT #{start}, #{size}]]>
+	</select>
+			
+	<update id="updateSystem">
+		update tp_upload_temp set file_status = 0 where file_status is NULL
+	</update>
+	<update id="updateCheckRoadId" parameterType="TpUploadTempVO" flushCache="true">
+		<![CDATA[
+		update tp_upload_temp set check_road_id=#{road_id} where id = #{id}
+		]]>
+	</update>
+	
+	<select id="ergodic" resultType="TpUploadTempVO">
+		<![CDATA[ select * from tp_upload_temp]]>
+	</select>
+	
+	<select id="DownPicByIndex" resultType="TpUploadTempVO" parameterType="TpUploadTempSearchVO" useCache="false">
+		<![CDATA[select * from tp_upload_temp where file_index = #{file_index} ]]>
+	</select>
+	
+	<select id="count" resultType="int" parameterType="TpUploadTempSearchVO" useCache="false">
+		<![CDATA[select count(*) as num from tp_upload_temp ]]>
+		<where>
+			<if test="user_id != null and user_id != ''" >
+				<![CDATA[ user_id = #{user_id} ]]>
+			</if>
+			<if test="user_name != null and user_name != ''" >
+				<![CDATA[ user_name like CONCAT(CONCAT('%', #{user_name}),'%') ]]>
+			</if>
+			<if test="file_status != null and file_status != ''" >
+				<![CDATA[AND file_status = #{file_status} ]]>
+			</if>
+			<if test="road_id != null and road_id != ''" >
+				<![CDATA[AND road_id = #{road_id} ]]>
+			</if>
+		</where>
+	</select>
+		
+	<select id="get" resultType="TpUploadTemp" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from tp_upload_temp where id = #{id}
+		]]>
+	</select>
+	
+	<select id="getByFileId" resultType="TpUploadTemp" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from tp_upload_temp where id = #{file_id}
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="TpUploadTemp" flushCache="true">
+		<![CDATA[
+		insert into tp_upload_temp set 
+						user_name=#{user_name},
+						user_id=#{user_id},
+						file_name=#{file_name},
+						file_addr=#{file_addr},
+						create_time=#{create_time},
+						file_status=#{file_status},
+						road_id=#{road_id},
+						check_road_id=#{user_id}
+					]]>
+		<selectKey resultType="int" keyProperty="id" order="AFTER"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS id ]]>   
+	    </selectKey> 
+	</insert>
+    
+	<update id="update" parameterType="TpUploadTemp" flushCache="true">
+		<![CDATA[
+		update tp_upload_temp set
+						user_name=#{user_name},
+						user_id=#{user_id},
+						file_name=#{file_name},
+						file_addr=#{file_addr},
+						create_time=#{create_time},
+						file_status=#{file_status},
+						road_id=#{road_id},
+						file_index=#{file_index},
+						file_status=#{file_status},
+						deal_time=#{deal_time},
+						car_type_name=#{car_type_name},
+						car_num=#{car_num},
+						illegal_time=#{illegal_time}
+					where id = #{id}
+		]]>
+	</update>
+    
+    <select id="checkFileRep" resultType="int" parameterType="String" flushCache="true">
+    	<![CDATA[
+    		select count(*) from tp_upload_temp where file_name = #{file_name}
+    	]]>
+    
+    </select>
+	
+	<delete id="delete" parameterType="int" flushCache="true">
+		<![CDATA[
+			DELETE FROM tp_upload_temp WHERE id = #{id}
+		]]>
+	</delete>
+	
+	<update id="deleteFile_index"  parameterType="int">
+		<![CDATA[
+		update tp_upload_temp set file_index = null where id =#{id}
+		]]>
+	</update>
+	
+	<select id="batchUpdateFileStatus" parameterType="list">  
+		update tp_upload_temp set file_status = 1 where id in
+    	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+    	#{item}
+    	</foreach> 
+	</select> 
+	
+	<select id="updateFileStatus">
+		update tp_upload_temp set file_status = #{0},check_road_id=#{1} where id = #{2}
+	</select>
+	
+	<select id="recoverFileStatus" parameterType="list">  
+		update tp_upload_temp set file_status = 0 where id in
+    	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+    	#{item}
+    	</foreach> 
+	</select>
+	
+	<select id="recoverDeal_time" parameterType="list">  
+		update tp_upload_temp set deal_time = null where id in
+    	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+    	#{item}
+    	</foreach> 
+	</select>
+	
+	<update id="updateIndex"  parameterType="int">
+		<![CDATA[
+		update tp_upload_temp set file_index = #{0} where id = #{1}
+		]]>
+	</update>
+	
+	<update id="updateDeal_time"  >
+		<![CDATA[
+		update tp_upload_temp set deal_time = #{0} where id = #{1}
+		]]>
+	</update>
+	
+	<select id="updateStatus" parameterType="int">  
+		update tp_upload_temp set file_status = 0 where id = #{0}
+	</select> 
+	
+	<update id="updateCar_type_name">
+		<![CDATA[
+		update tp_upload_temp set car_type_name = #{0} where id = #{1}
+		]]>
+	</update>
+	
+	<update id="updateCar_num">
+		<![CDATA[
+		update tp_upload_temp set car_num = #{0} where id = #{1}
+		]]>
+	</update>
+	
+	<update id="updateIllegal_time">
+		<![CDATA[
+		update tp_upload_temp set illegal_time = #{0} where id = #{1}
+		]]>
+	</update>
+	
+</mapper>

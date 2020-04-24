@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry” -->
+<mapper namespace="com.devops.suc.dao.AppDao">
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+
+	<select id="list" resultType="appVo" parameterType="row">
+		<![CDATA[select a.*,ag.name as group_name from app a left join app_group ag on a.app_group_id = ag.app_group_id where 1=1 ]]>
+		<if
+			test="app_group_id != null and app_group_id != '' and app_group_id != 0">
+	         <![CDATA[and a.app_group_id=#{app_group_id} ]]>
+		</if>
+		<if test="name != null and name != ''">
+	         <![CDATA[and a.name like CONCAT('%','#{name}','%') ]]>
+		</if>
+		<if test="status != null and status != ''">
+	         <![CDATA[and a.status = #{status} ]]>
+		</if>
+		order by a.sequence desc
+		limit #{start},#{size}
+	</select>
+
+	<select id="listAll" resultType="app" parameterType="appSearchVO">
+		<![CDATA[select * from app]]>
+		<where>
+			<if test="name != null and name != ''">
+	         <![CDATA[name =#{name} ]]>
+			</if>
+			<if test="cn_name != null and cn_name != ''">
+	         <![CDATA[and cn_name = #{cn_name} ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="listParam" resultType="KeyValueSetting">
+		<![CDATA[select id AS id,dic_key AS dicKey, value AS value,name AS name from key_value_setting]]>
+	</select>
+	
+	<select id="getParamById" resultType="KeyValueSetting" parameterType="Integer">
+		<![CDATA[select id AS id,dic_key AS dicKey, value AS value,name AS name from key_value_setting where id=#{param_id}]]>
+	</select>
+
+	<select id="count" resultType="int" parameterType="row">
+		<![CDATA[select count(*) from app a left join app_group ag on a.app_group_id = ag.app_group_id where 1=1 ]]>
+		<if test="app_group_id != null and app_group_id != ''">
+	         <![CDATA[and a.app_group_id=#{app_group_id} ]]>
+		</if>
+		<if test="name != null and name != ''">
+	         <![CDATA[and a.name like CONCAT('%','#{name}','%') ]]>
+		</if>
+		<if test="status != null and status != ''">
+	         <![CDATA[and a.status = #{status} ]]>
+		</if>
+	</select>
+
+	<select id="listAppByUser" resultType="appVo" parameterType="row">
+		<![CDATA[select a.*,ag.name as group_name from app a left join app_group ag on a.app_group_id = ag.app_group_id]]>
+		<where>
+			a.app_id in (select app_id from role where role_id in (select
+			role_id from user_role_relation where user_id = #{user_id}))
+		</where>
+		order by a.sequence desc
+	</select>
+	
+	<select id="listAllEffApp" resultType="appVo">
+		<![CDATA[select a.*,ag.name as group_name from app a left join app_group ag on a.app_group_id = ag.app_group_id where a.status = 1]]>
+	</select>
+
+</mapper>

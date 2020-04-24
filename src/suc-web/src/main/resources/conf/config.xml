@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- 带 (*) 的表示必须配置 -->
+	
+	<!-- 每页显示记录数 -->
+	<page_size value="15" />
+	
+	<!-- 显示最大记录数 -->
+	<page_max_size value="1000" />
+	
+	<!-- 是否使用本地cache,true使用，false 不使用 -->
+	<local_cache value="true"/>
+	
+	<upload_dir value="${upload_dir}" />
+	<backup_dir value="${backup_dir}" />
+	
+</config>

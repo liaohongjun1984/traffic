@@ -1,0 +1,366 @@
+
+0、安装初始信息
+yum -y install gcc
+yum -y install gcc-c++
+
+初始化目录
+mkdir -p /data/download/
+mkdir -p /data/services
+
+
+1、安装JDK
+cd /data/download
+wget http://120.24.235.144:8080/download/jdk-7u60-linux-x64.tar.gz
+cp jdk-7u60-linux-x64.tar.gz /data/services
+cd /data/services
+tar -xvf jdk-7u60-linux-x64.tar.gz
+
+配置/etc/profile
+export JAVA_HOME=/data/services/jdk1.7.0_60
+export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar 
+export PATH=$PATH:$JAVA_HOME/bin
+立即生效
+source /etc/profile
+
+2、安装PCRE
+cd /data/download
+wget http://120.24.235.144:8080/download/pcre-8.35.tar.gz 
+tar -xvf pcre-8.35.tar.gz 
+cd pcre-8.35
+
+./configure --enable-utf8  
+make 
+make check
+make install 
+
+3、安装NGINX依赖库ZLIB
+yum install -y zlib-devel
+
+4、安装NGINX
+cd /data/download
+wget http://120.24.235.144:8080/download/nginx-1.6.0.tar.gz 
+
+tar -xf nginx-1.6.0.tar.gz 
+cd nginx-1.6.0
+
+mkdir -p /data/services/nginx
+
+./configure --prefix=/data/services/nginx
+
+make
+make install
+
+5、安装REDIS依赖TCL包
+cd /data/download
+wget http://120.24.235.144:8080/download/tcl8.6.0-src.tar.gz
+tar -xvf tcl8.6.0-src.tar.gz
+cd tcl8.6.0/unix/  
+./configure  
+make 
+make install
+
+6、安装redis
+cd /data/download
+wget http://120.24.235.144:8080/download/redis-2.8.3.tar.gz
+tar -xvf redis-2.8.3.tar.gz
+cd redis-2.8.3
+mkdir -p /data/services/redis
+cp -R /data/download/redis-2.8.3/* /data/services/redis/
+cd /data/services/redis/
+make
+make test
+
+mkdir -p /data/conf/redis
+cd /data/conf/redis
+wget http://120.24.235.144:8080/download/6501_redis.conf
+
+mkdir -p /data/script/02_redis
+cd /data/script/02_redis
+wget http://120.24.235.144:8080/download/6501.sh
+
+
+7、安装MYSQL客户端
+yum install mysql-server
+yum install mysql-devel
+
+8、规划域名
+用户中心：suc.bd.fcgmsapp.com 
+审核后台：oss.bd.fcgmsapp.com 
+商户系统：b.fcgmsapp.com 
+微信系统：wx.fcgmsapp.com 
+收银系统：webpos.fcgmsapp.com 
+接口系统：api.fcgmsapp.com 
+微信砍价：bargain.fcgmsapp.com 
+产品论坛：bbs.fcgmsapp.com 
+官方网站：www.fcgmsapp.com 
+
+112.74.129.103
+
+配置nginx的虚拟目录
+mkdir -p /data/services/nginx/conf/conf.d
+wget  http://120.24.235.144:8080/download/conf.d.tar
+
+tar -xvf conf.d.tar 
+mv conf.d/* .
+rm -rf conf.d conf.d.tar 
+
+配置域名
+mv suc.bd.soucanwuyou.com.conf suc.bd.fcgmsapp.com.conf 
+mv b.soucanwuyou.com.conf      b.fcgmsapp.com.conf
+mv wx.soucanwuyou.com.conf     wx.fcgmsapp.com.conf
+mv oss.soucanwuyou.com.conf    oss.fcgmsapp.com.conf
+mv webpos.soucanwuyou.com.conf webpos.fcgmsapp.com.conf
+mv www.soucanwuyou.com.conf    www.fcgmsapp.com.conf
+mv bargain.soucanwuyou.com.conf bargain.fcgmsapp.com.conf
+mv bbs.soucanwuyou.com.conf     bbs.fcgmsapp.com.conf
+
+启动NGINX
+/data/services/nginx/sbin/nginx -c /data/services/nginx/conf/nginx.conf
+报下面的错误
+/data/services/nginx/sbin/nginx: error while loading shared libraries: libpcre.so.1: cannot open shared object file: No such file or directory
+执行
+ln -s /lib64/libpcre.so.0.0.1 /lib64/libpcre.so.1
+
+8、阿里云数据库创建
+创建数据库yct_suc,yct
+创建用户yct_product=idohoo001
+
+ping 数据库的域名 rds215ad5nuzd82cp8zg.mysql.rds.aliyuncs.com 获取IP，这种方式以后会有问题
+
+配置hosts
+100.99.152.206 master.mysql.yct.idohoo.com
+100.99.152.206 slave.mysql.yct.idohoo.com
+127.0.0.1 suc-webservice.yct.idohoo.com
+
+1)安装SUC数据库
+cd /data/download
+wget http://120.24.235.144:8080/download/suc.zip
+unzip suc.zip 
+登录数据库
+mysql -hrds215ad5nuzd82cp8zg.mysql.rds.aliyuncs.com -uyct_product -pidohoo001
+use yct_suc;
+set names utf8;
+source suc.sql;
+source init.sql;
+source key_value_setting.sql;
+
+修改业务数据
+update key_value_setting set value='.bd.fcgmsapp.com' where dic_key='bd_domain';
+update key_value_setting set value='后台管理系统帐户添加通知' where dic_key='subject';
+update key_value_setting set value='%s，你好,你的账户已经在后台管理系统增加，用户名为:%s,密码为:%s，请尽快登陆系统更改你的密码。<br><a href="http://suc.bd.fcgmsapp.com">http://suc.bd.fcgmsapp.com<a>' where dic_key='mailbody';
+update key_value_setting set value='欢迎登录云餐厅统一用户中心系统(v1.0)' where dic_key='welcome_info';
+update key_value_setting set value='云餐厅用户中心系统' where dic_key='system_name';
+
+2)安装YCT数据库
+cd /data/download
+wget http://120.24.235.144:8080/download/yct.zip
+unzip yct.zip
+登录数据库
+mysql -hrds215ad5nuzd82cp8zg.mysql.rds.aliyuncs.com -uyct_product -pidohoo001
+use yct;
+set names utf8;
+source yct.sql;
+source key_value_setting.sql;
+
+9、安装JDK
+cd /data/services
+wget http://120.24.235.144:8080/download/jdk-7u60-linux-x64.tar.gz
+tar -xvf jdk-7u60-linux-x64.tar.gz
+
+vi /etc/profile
+在最后添加
+export JAVA_HOME=/data/services/jdk1.7.0_60
+export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar 
+export PATH=$PATH:$JAVA_HOME/bin
+
+10、安装用户中心，用户中心服务接口，同步进程
+cd /data/webservers
+wget http://120.24.235.144:8080/download/webservers/9000-yct-suc.tar
+tar -xvf 9000-yct-suc.tar
+rm -rf 9000-yct-suc.tar
+cd /data/script
+wget http://120.24.235.144:8080/download/script/suc.sh
+sh suc.sh 
+
+cd /data/webservers
+wget http://120.24.235.144:8080/download/webservers/40099-yct-suc-webservice.tar
+tar -xvf 40099-yct-suc-webservice.tar
+rm  -rf  40099-yct-suc-webservice.tar
+cd /data/script
+wget http://120.24.235.144:8080/download/script/suc-webservice.sh
+sh suc-webservice.sh
+
+cd /data/script
+wget http://120.24.235.144:8080/download/script/suc-data-syn.sh
+sh suc-data-syn.sh
+
+11、安装审核后台
+cd /data/webservers
+wget http://120.24.235.144:8080/download/webservers/9001-yct-oss.tar
+tar -xvf 9001-yct-oss.tar
+rm  -rf  9001-yct-oss.tar
+cd /data/script
+wget http://120.24.235.144:8080/download/script/yct-admin.sh
+sh yct-admin.sh
+
+12、安装商户系统
+cd /data/webservers
+wget http://120.24.235.144:8080/download/webservers/9002-yct-shop.tar
+tar -xvf 9002-yct-shop.tar
+rm  -rf  9002-yct-shop.tar
+cd /data/script
+wget http://120.24.235.144:8080/download/script/shop.sh
+sh shop.sh
+
+13、安装微信系统
+cd /data/webservers
+wget http://120.24.235.144:8080/download/webservers/9003-yct-wx.tar
+tar -xvf 9003-yct-wx.tar
+rm  -rf  9003-yct-wx.tar
+cd /data/script
+wget http://120.24.235.144:8080/download/script/wx.sh
+sh wx.sh
+
+14、安装JOB系统
+cd /data/webservers
+wget http://120.24.235.144:8080/download/webservers/9004-yct-job.tar
+tar -xvf 9004-yct-job.tar
+rm  -rf  9004-yct-job.tar
+cd /data/script
+wget http://120.24.235.144:8080/download/script/job.sh
+sh job.sh
+
+15、接口系统
+cd /data/webservers
+wget http://120.24.235.144:8080/download/webservers/9005-yct-api.tar
+tar -xvf 9005-yct-api.tar
+rm  -rf  9005-yct-api.tar
+cd /data/script
+wget http://120.24.235.144:8080/download/script/api.sh
+sh api.sh
+
+16、收银系统
+cd /data/script
+wget http://120.24.235.144:8080/download/script/webpos.sh
+sh webpos.sh
+
+17、图片处理模块
+cd /data/webservers
+rm -rf 40098-file-webservice
+wget http://120.24.235.144:8080/download/webservers/40098-file-webservice.tar
+tar -xvf 40098-file-webservice.tar
+rm  -rf  40098-file-webservice.tar
+cd /data/script
+rm -rf file.sh
+wget http://120.24.235.144:8080/download/script/file.sh
+sh file.sh
+
+18、砍价系统
+cd /data/webapps
+svn co svn://119.29.64.126/mkt/trunk/src/bargain
+
+19、邀请函服务器环境搭建
+	19.1 安装php环境
+		 
+		官网下载php5.4以上安装包
+		解压后进入目录php-5.6.9,然后执行：
+		./buildconf  --force
+	    这是为了防止出现 cp:cannot stat 'sapi/cli/php.1': No such file or directory
+		
+		然后执行
+		./configure --prefix=/data/webservers/php --enable-fastcgi --enable-fpm --with-mcrypt --enable-mbstring --enable-pdo --with-curl --disable-debug --enable-pic --disable-rpath  --enable-inline-optimization --with-bz2 --with-xml --with-zlib --enable-sockets --enable-sysvsem --enable-sysvshm --enable-pcntl --enable-mbregex --with-mhash --enable-xslt --enable-memcache --enable-zip --with-pcre-regex --with-mysql --with-pdo-mysql --with-gd --with-jpeg-dir
+		然后根据提示 缺失什么包就
+		yum install xxxx-devel
+		
+		编译完成后  make && make install
+		
+		安装完成后 将php.ini.develop
+		复制到
+		cp ./php.ini.develop /data/webservers/php/ext/php.ini
+	19.2 安装phpredis扩展
+	    wget https://codeload.github.com/owlient/phpredis/tar.gz/2.1.1
+		mv 2.1.1 phpredis-2.1.1.tar.gz
+		tar -zxvf phpredis-2.1.1.tar.gz
+		mv phpredis-2.1.1 /usr/src
+		cd /usr/src/phpredis-2.1.1
+		/data/webservers/php/bin/phpize
+		./configure --with-php-config=/data/webservers/php/bin/php-config
+		make && make install
+		拷贝得到的redis.so的路径
+		cd /data/webservers/php/ext/
+		mv ./php-fpm.conf.default ./php-fpm.conf
+		vim php.ini 修改配置
+		插入 extensions = redis.so的路径
+		保存
+		vim php-fpm.conf 修改配置
+	19.3 启动php
+	/data/webservers/php/sbin/php-fpm -d /data/webservers/php/ext/php-fpm.conf -c /data/webservers/php/ext/php.ini20、把邀请函的代码下载到
+	cd /data/webapps	svn co svn://119.29.64.126/mkt/trunk/src/yqh
+	
+    /data/webapps/yqh	
+		21、邀请函nginx配置
+
+location /Client/Yqh/Public{
+        rewrite ^/Client/Yqh(.*)$ $1 break;
+        root /data/webapps/yqh/Application/Invite;
+        break;
+   }
+
+location  /client/yqh {
+	rewrite ^/client/yqh(.*)$ /index.php?s=Invite$1 break;
+	proxy_set_header Host "wx.soucanwuyou.cn";
+	root           /data/webapps/yqh;
+	fastcgi_pass   127.0.0.1:10101;
+	fastcgi_index  index.php;
+	fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+	include        fastcgi_params;
+}
+
+17、验证系统
+
+用户中心登录地址：http://suc.bd.fcgmsapp.com
+帐号:admin
+密码:e10adc3949ba59abbe56e057f20f883e
+初始化操作
+1、建立管理员角色
+
+
+运营支撑系统地址：
+帐号：
+密码：
+
+商户系统登录地址：
+帐号：
+密码：
+
+收银系统登录地址：
+帐号：
+密码：
+
+手机APP：
+
+砍价：
+
+用户论坛：
+
+微信前端：
+
+邀请涵：
+
+红包分享：
+
+
+
+
+后续需要处理的事情
+1、菜单为乱码
+2、YCT和YCT-SUC数据库初始化数据有问题
+   YCT_SUC没有运营系统的菜单和权限
+   YCT的参数表有问题
+
+点呗上线需要注意的地方
+1、修改JS的域名，yct-shop的common.js
+2、修改yct-admin的登录地址
+3、
+
+

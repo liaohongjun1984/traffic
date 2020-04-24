@@ -1,0 +1,196 @@
+body{
+    background: #3D3D3D;
+}
+body #top{
+	background:#000;
+	height:36px;
+	line-height:36px;
+	padding:5px 0;
+    border-bottom: none;
+}
+#top .login,
+#top .login a{
+    color:#f5f5f5;
+}
+#top .wrap{
+	margin:0 10px;
+	width:auto;
+	min-width:1200px;
+}
+#top .appLinks .btn-group{
+	margin-top:5px;
+}
+.appLinks .dropdown-menu{
+	min-width:100px;
+}
+#logo{
+    float: left;
+}
+#logo a{
+	color:#999999;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+#logo a:hover{
+    color: #ffffff;
+}
+.container{
+    width: auto;
+}
+.container .main{
+    margin-top: 46px;
+}
+
+.main > .right{
+    margin-left: 225px;
+    width: auto;
+    float: none;
+    padding: 20px;
+    background: #fff;
+}
+.main > .left{
+    width: 225px;
+}
+.main #sec-left .menuTree{
+    border:none;
+    border-radius: 0;
+    background: none;
+    color: #f5f5f5;
+}
+.main #sec-left .menuTree a,
+.main #sec-left .menuTree a:link,
+.main #sec-left .menuTree a.visited{
+    color: #f5f5f5;
+}
+#sec-left .menuTree .item-nav{
+    border:none;
+}
+#sec-left .menuTree .itembox{
+}
+#sec-left .menuTree .item-nav:hover{
+    background: none;
+}
+.box-item > .tit, .box-tab > .tit > li{
+    background: #AAAAAA;
+    border:none;
+    border-radius: 0;
+}
+table.cyan thead{
+    background: #DDDDDD;
+}
+.action-bar{
+    background: none;
+    padding: 20px;
+    border-color: #AAAAAA;
+}
+.button, .top input[type="button"], .bottom input[type="button"], .nav input[type="button"]{
+    border-radius: 0;
+    border: none;
+    background: #AAAAAA;
+    padding: 5px 15px!important;
+}
+.button:hover,.top input[type="button"]:hover,.bottom input[type="button"]:hover,.nav input[type="button"]:hover{
+    background: #BBBBBB;
+}
+.button:active,.top input[type="button"]:active,.bottom input[type="button"]:active,.nav input[type="button"]:active{
+    background:-webkit-linear-gradient(#76AE01,#93BC2D 50%,#B6D054);
+}
+.button[disabled],.top input[type="button"][disabled],.bottom input[type="button"][disabled],.nav input[type="button"][disabled]{
+    background:-webkit-linear-gradient(#f1f1f1,#eee 50%,#ddd 50%,#eee);cursor:default;border-color:#C9C7BA;color:#ACA899;
+}
+
+table.cyan td, table.cyan th{
+    border-color: #AAAAAA;
+}
+#sec-left .menuTree a{
+    line-height: 30px;
+    padding: 0 10px;
+}
+#sec-left .menuTree a.active{
+    background: #575757;
+}
+#sec-left .parent a{
+    font-size: 14px;
+}
+#sec-left .menuTree .item-nav{
+    padding: 0;
+}
+#sec-left .menuTree .itembox{
+    width: auto;
+}
+.footer{
+    border: none;
+}
+.main > .right > h2{
+    border-bottom: 1px solid #AAAAAA;
+}
+.main > .right > h2 > span{
+    border-color: #AAAAAA;
+    border-bottom: 1px solid #ffffff;
+}
+.box-item .top{
+    border-color: #AAAAAA;
+    background: none;
+}
+.box-item > .cont-border{
+    border-color: #AAAAAA;
+}
+.box-item > .tit > span.arr, .box-tab > .tit > li > span.arr{
+    display: none;
+}
+.paginationbar a, .paginationbar span, .displayNum a, .displayNum span, #displayNum_cont a, #displayNum_cont span{
+    background: #DDDDDD;
+}
+a{
+   color: #0D638F;
+}
+.main > .right > h2{
+    width: auto;
+}
+.feed .feed-list .feed-item:hover{
+    background: #f5f5f5;
+}
+.feed .feed-list .feed-item:nth-child(2n){
+    background: #f5f5f5;
+}
+html{
+    min-height: 100%;
+}
+.login-body{
+    background: url("../img/login-bg.png");
+    background-position:center center;
+    height: 100%;
+}
+#box-login{
+    width: 500px;
+    height: 175px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -250px;
+    margin-top: -100px;
+    background: #ffffff;
+    border:1px solid #AAAAAA;
+    -webkit-box-shadow: 3px 7px 7px #333;
+    -moz-box-shadow: 3px 7px 7px #333;
+    box-shadow: 3px 7px 7px #333;
+}
+#box-login .tit{
+    top: -50px;
+    left: 0;
+    position: absolute;
+    background: none;
+    color: #ffffff;
+}
+#box-login .tit h4{
+    font-size: 24px;
+    font-family: 'Microsoft Yahei';
+    font-weight: normal;
+}
+#box-login .cont .bottom{
+    border-radius: 0 0 3px 3px;
+}
+.main>.right{
+    min-height: 800px;
+}

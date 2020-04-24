@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”-->
+<mapper namespace="com.devops.suc.dao.BusGroupDao">
+
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+	     
+	<select id="listChilds" resultType="busGroupVO" parameterType="row">
+		select * from bus_group where group_id like CONCAT(#{group_id},'%')
+	</select>
+	
+	<insert id="addGroupUser" parameterType="row">
+		insert into user_group_relation(group_id,user_id)values
+		<foreach collection="user_list" item="item" index="index" separator=",">
+        	(#{group_id},#{item})
+    	</foreach>
+	</insert>
+</mapper>

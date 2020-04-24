@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- "namespace" must be the path of interface, or show error “is not known to the MapperRegistry” when launch -->
+<mapper namespace="com.devops.suc.dao.TpStatisticsDao">
+	
+	<!-- "id" must be as same as method name of the interface -->
+	<select id="list" resultType="TpStatisticsVO" parameterType="TpStatisticsSearchVO" useCache="false">
+		<![CDATA[select * from tp_statistics ]]>
+		<where>
+			<if test="beginTime != null and beginTime != ''" >
+						<![CDATA[ (date > #{beginTime} or date = #{beginTime}) AND (date < #{endTime} or date = #{endTime})]]>
+			</if>
+			<if test="user_id != null and user_id != ''" >
+						<![CDATA[AND user_id = #{user_id} ]]>
+					</if>
+		</where>
+				ORDER BY cr_id DESC 
+		<![CDATA[ LIMIT #{start} , #{size}  ]]>
+	</select>
+	
+	<select id="countStatic" resultType="int" useCache="false">
+		<![CDATA[select count(*) as num from tp_statistics ]]>
+	</select>
+	
+	<select id="count" resultType="int" parameterType="TpStatisticsSearchVO" useCache="false">
+		<![CDATA[select count(*) as num from tp_statistics ]]>
+		<where>
+			<if test="beginTime != null and beginTime != ''" >
+						<![CDATA[ (date > #{beginTime} or date = #{beginTime}) AND (date < #{endTime} or date = #{endTime})]]>
+			</if>
+			<if test="user_id != null and user_id != ''" >
+						<![CDATA[AND user_id = #{user_id} ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="getByDateAndUserId" resultType="TpStatistics" useCache="true">
+		<![CDATA[
+			select * from tp_statistics where date = #{0} and user_id = #{1}
+		]]>
+	</select>
+	
+	<select id="get" resultType="TpStatistics" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from tp_statistics where cr_id = #{cr_id}
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="TpStatistics" flushCache="true">
+		<![CDATA[
+		insert into tp_statistics set 
+						up_num=#{up_num},
+						checked=#{checked},
+						invalid=#{invalid},
+						date=#{date},
+						user_id=#{user_id},
+						user_name=#{user_name}
+					]]>
+		<selectKey resultType="int" keyProperty="cr_id" order="AFTER"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS cr_id ]]>   
+	    </selectKey> 
+	</insert>
+    
+	<update id="update" parameterType="TpStatistics" flushCache="true">
+		<![CDATA[
+		update tp_statistics set
+						up_num=#{up_num},
+						checked=#{checked},
+						invalid=#{invalid},
+						date=#{date},
+						user_id=#{user_id},
+						user_name=#{user_name}
+					where cr_id = #{cr_id}
+		]]>
+	</update>
+	
+	<update id="updateChecked" parameterType="int" flushCache="true">
+		<![CDATA[
+			update tp_statistics set checked=checked+1
+					where cr_id = #{0}
+		]]>
+	</update>
+	
+	<update id="updateInvalid" parameterType="int" flushCache="true">
+		<![CDATA[
+			update tp_statistics set invalid=invalid+1
+					where cr_id = #{0}
+		]]>
+	</update>
+	
+	<update id="updateUpNum" parameterType="int" flushCache="true">
+		<![CDATA[
+			update tp_statistics set up_num=up_num+1
+					where cr_id = #{0}
+		]]>
+	</update>
+    
+    <update id="reduceChecked" parameterType="int" flushCache="true">
+		<![CDATA[
+			update tp_statistics set checked=checked-1
+					where cr_id = #{0}
+		]]>
+	</update>
+	
+	<update id="reduceInvalid" parameterType="int" flushCache="true">
+		<![CDATA[
+			update tp_statistics set invalid=invalid-1
+					where cr_id = #{0}
+		]]>
+	</update>
+    
+	<delete id="delete" parameterType="int" flushCache="true">
+		<![CDATA[
+			DELETE FROM tp_statistics WHERE cr_id = #{cr_id}
+		]]>
+	</delete>
+</mapper>

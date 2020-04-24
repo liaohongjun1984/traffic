@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.devops.suc.dao.TpCheckedDao">
+	<select id="list" resultType="TpCheckedVO" parameterType="TpCheckedSearchVO" useCache="false">
+		<![CDATA[select * from tp_checked]]>
+		<where>
+			<if test="user_id != null and user_id != ''" >
+				<![CDATA[user_id = #{user_id}]]>
+			</if>
+			<if test="road_id != null and road_id != ''" >
+				<![CDATA[and road_id = #{road_id}]]>
+			</if>
+		</where>
+				<![CDATA[ORDER BY create_time DESC]]>
+		<![CDATA[ LIMIT #{start}, #{size}]]>
+	</select> 
+	
+	<select id="count" resultType="int" parameterType="TpCheckedSearchVO" useCache="false">
+		<![CDATA[select count(*) as num from tp_checked ]]>
+		<where>
+			<if test="user_id != null and user_id != ''" >
+				<![CDATA[ user_id = #{user_id} ]]>
+			</if>
+			<if test="road_id != null and road_id != ''" >
+				<![CDATA[AND road_id = #{road_id} ]]>
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterType="TpChecked" flushCache="true">
+		<![CDATA[
+		insert into tp_checked set 
+						upload_temp_id=#{upload_temp_id},
+						user_name=#{user_name},
+						user_id=#{user_id},
+						road_id=#{road_id},
+						file_name=#{file_name},
+						file_addr=#{file_addr},
+						create_time=#{create_time},
+						check_result=#{check_result},
+						car_type_name=#{car_type_name},
+						car_num=#{car_num},
+						illegal_time=#{illegal_time}
+					]]>
+		<selectKey resultType="int" keyProperty="id" order="AFTER"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS id ]]>   
+	    </selectKey> 
+	</insert>
+</mapper>

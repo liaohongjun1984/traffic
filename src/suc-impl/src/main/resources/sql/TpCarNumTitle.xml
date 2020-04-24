@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- "namespace" must be the path of interface, or show error “is not known to the MapperRegistry” when launch -->
+<mapper namespace="com.devops.suc.dao.TpCarNumTitleDao">
+
+<!-- "id" must be as same as method name of the interface -->
+	<select id="list" resultType="TpCarNumTitleVO" parameterType="TpCarNumTitleSearchVO" useCache="false">
+		<![CDATA[select * from tp_car_num_title ]]>
+		<where>
+			<if test="crt_num_title != null and crt_num_title != ''" >
+						<![CDATA[ crt_num_title like CONCAT(CONCAT('%', #{crt_num_title}),'%') ]]>
+					</if>
+			<if test="crt_num_id != null and crt_num_id != ''" >
+						<![CDATA[ crt_num_id = #{crt_num_id}]]>
+					</if>
+		</where>
+				ORDER BY crt_id DESC 
+		<![CDATA[ LIMIT #{start} , #{size}  ]]>
+	</select>
+	
+	
+	<select id="count" resultType="int" parameterType="TpCarNumTitleSearchVO" useCache="false">
+		<![CDATA[select count(*) as num from tp_car_num_title ]]>
+		<where>
+			<if test="crt_num_title != null and crt_num_title != ''" >
+							<![CDATA[ crt_num_title like CONCAT(CONCAT('%', #{crt_num_title}),'%') ]]>
+								
+			</if>
+		</where>
+	</select>
+	
+	<select id="get" resultType="TpCarNumTitle" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from tp_car_num_title where crt_id = #{crt_id}
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="TpCarNumTitle" flushCache="true">
+		<![CDATA[
+		insert into tp_car_num_title set 
+						crt_num_title=#{crt_num_title},
+						crt_num_id=#{crt_num_id}
+					]]>
+		<selectKey resultType="int" keyProperty="id" order="AFTER"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS id ]]>   
+	    </selectKey> 
+	</insert>
+	
+	<update id="update" parameterType="TpCarNumTitle" flushCache="true">
+		<![CDATA[
+		update tp_car_num_title set
+						crt_num_title=#{crt_num_title},
+						crt_num_id=#{crt_num_id}
+					where crt_id = #{crt_id}
+		]]>
+	</update>
+    
+	<delete id="delete" parameterType="int" flushCache="true">
+		<![CDATA[
+			DELETE FROM tp_car_num_title WHERE crt_id = #{crt_id}
+		]]>
+	</delete>
+</mapper>

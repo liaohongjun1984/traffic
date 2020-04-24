@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”-->
+<mapper namespace="com.devops.suc.dao.InfoFlowDao">
+<!-- 
+	<cache flushInterval="30000" size="1024" eviction="LRU" readOnly="false" />
+	 -->
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+	     
+	<select id="list" resultType="infoFlowVO" parameterType="row">
+		<![CDATA[select i.*,a.name,a.cn_name from info_flow i left join app a on i.app_id = a.app_id where 1=1 ]]>
+		<if test="app_id != null and app_id != ''" >
+	         <![CDATA[and i.app_id=#{app_id} ]]>
+	     </if>
+		<if test="value != null and value != ''" >
+	         <![CDATA[and i.value like CONCAT('%',#{value},'%') ]]>
+	    </if>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="count" resultType="int" parameterType="row">
+		<![CDATA[select count(*) from info_flow i left join app a on i.app_id = a.app_id where 1=1 ]]>
+		<if test="app_id != null and app_id != ''" >
+	         <![CDATA[and i.app_id=#{app_id} ]]>
+	     </if>
+		<if test="value != null and value != ''" >
+	         <![CDATA[and i.value like CONCAT('%',#{value},'%') ]]>
+	    </if>
+	</select>
+	
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”-->
+<mapper namespace="com.devops.suc.dao.SendLogDao">
+	<insert id="add" parameterType="sendLog">
+		insert into send_log set queue_id=#{queue_id},recipient=#{recipient},cc=#{cc},subject=#{subject},
+		message=#{message},execute_time=now(),queue_type=#{queue_type},create_time=#{create_time},last_modify=#{last_modify},
+		queue_index=#{queue_index},data=#{data},result=#{result}
+	</insert>
+	<select id="list" resultType="sendLog" parameterType="sendLogSearchVO">
+		<![CDATA[select * from send_log]]>
+		<where>
+			<if test="queue_type != null and queue_type != 0">
+		         <![CDATA[queue_type=#{queue_type} ]]>
+			</if>			
+		    <if test="start_time != null and start_time != ''" >
+		         <![CDATA[and create_time >= #{start_time} ]]>
+		    </if>	     
+		    <if test="end_time != null and end_time != ''" >
+		         <![CDATA[and create_time <= #{end_time} ]]>
+		    </if>	     			
+		</where>
+		order by create_time desc limit #{start},#{size}
+	</select>	
+	<select id="count" resultType="int" parameterType="sendLog">
+		<![CDATA[select count(*) from send_log]]>
+		<where>
+			<if test="queue_type != null and queue_type != 0">
+		         <![CDATA[queue_type=#{queue_type} ]]>
+			</if>			
+		    <if test="start_time != null and start_time != ''" >
+		         <![CDATA[and create_time >= #{start_time} ]]>
+		    </if>	     
+		    <if test="end_time != null and end_time != ''" >
+		         <![CDATA[and create_time <= #{end_time} ]]>
+		    </if>	     			
+		</where>
+	</select>
+	
+	<select id="get" resultType="sendLog" parameterType="int">
+		<![CDATA[select * from send_log]]>
+		<where>
+		      <![CDATA[id = #{id} ]]>	     			
+		</where>
+	</select>			
+</mapper>

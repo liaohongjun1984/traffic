@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- "namespace" must be the path of interface, or show error “is not known to the MapperRegistry” when launch -->
+<mapper namespace="com.devops.suc.dao.RoldActionRelationDao">
+	
+	<!-- "id" must be as same as method name of the interface -->
+	<select id="list" resultType="RoldActionRelationVO" parameterType="RoldActionRelationSearchVO" useCache="false">
+		<![CDATA[select * from road_action_relation ]]>
+		<where>
+			<if test="action_id != null and action_id != ''" >
+					<![CDATA[ action_id = #{action_id}]]>
+			</if>
+			<if test="road_id != null and road_id != ''" >
+					<![CDATA[ AND road_id = #{road_id} ]]>
+			</if>
+
+		</where>
+				ORDER BY road_id DESC 
+		<![CDATA[ LIMIT #{start} , #{size}  ]]>
+	</select>
+	
+	<select id="count" resultType="int" parameterType="RoldActionRelationSearchVO" useCache="false">
+		<![CDATA[select count(*) as num from road_action_relation ]]>
+		<where>
+			<if test="action_id != null and action_id != ''" >
+					<![CDATA[ action_id = #{action_id}]]>
+			</if>
+			<if test="road_id != null and road_id != ''" >
+					<![CDATA[ AND road_id = #{road_id} ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="get" resultType="RoldActionRelation" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from road_action_relation where road_id = #{road_id}
+		]]>
+	</select>
+	
+	<select id="getByActionId" resultType="RoldActionRelation" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from road_action_relation where action_id = #{action_id}
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="RoldActionRelation" flushCache="true">
+		<![CDATA[
+		insert into road_action_relation set 
+				action_id=#{action_id},road_id=#{road_id}]]>
+	</insert>
+    
+	<update id="update" parameterType="RoldActionRelation" flushCache="true">
+		<![CDATA[
+		update road_action_relation set road_id = #{road_id} where action_id=#{action_id}
+		]]>
+	</update>
+    
+	<delete id="delete" parameterType="int" flushCache="true">
+		<![CDATA[
+			DELETE FROM road_action_relation WHERE road_id = #{road_id}
+		]]>
+	</delete>
+</mapper>

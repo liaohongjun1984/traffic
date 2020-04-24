@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry” -->
+<mapper namespace="com.devops.suc.dao.DomainWeightsDao">
+
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+	<select id="list" resultType="domainWeightsVO" parameterType="domainWeightsSearchVO">
+		<![CDATA[SELECT d.*,a.cn_name,u.nick_name from domain_weights d LEFT JOIN app a on d.app_id=a.app_id left join user u on d.operator = u.user_name]]>
+		<where>
+			<if test="host != null and host != ''">
+		         <![CDATA[d.host like CONCAT('%',#{host},'%')]]>
+			</if>
+			<if test="app_id > 0">
+		         <![CDATA[and d.app_id = #{app_id}]]>
+			</if>
+		</where>
+		order by a.name asc,d.weight desc limit #{start},#{size}
+	</select>
+	
+	<select id="listByAppId" useCache="true" resultType="domainWeights" parameterType="java.lang.Integer">
+		<![CDATA[select * from domain_weights where app_id=#{app_id} order by weight desc]]>
+	</select>
+	
+	<select id="listAll" useCache="true" resultType="domainWeights" parameterType="domainWeights">
+		<![CDATA[select * from domain_weights]]>
+		<where>
+			<if test="host != null and host != ''">
+		         <![CDATA[host = #{host}]]>
+			</if>
+			<if test="app_id > 0">
+		         <![CDATA[and app_id = #{app_id}]]>
+			</if>
+		</where>
+		order by last_modify desc
+	</select>
+	
+	<select id="listCount" useCache="true" resultType="int" parameterType="domainWeightsSearchVO">
+		<![CDATA[select count(*) as num from domain_weights]]>
+		<where>
+			<if test="host != null and host != ''">
+		         <![CDATA[host like CONCAT('%',#{host},'%')]]>
+			</if>
+			<if test="app_id > 0">
+		         <![CDATA[and app_id = #{app_id}]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="get" useCache="true" resultType="domainWeights" parameterType="java.lang.Integer">
+		<![CDATA[
+			select * from domain_weights where id = #{id}
+		]]>
+	</select>
+
+	<insert id="insert" parameterType="domainWeights" flushCache="true">
+		<![CDATA[
+			insert into domain_weights(host, weight, app_id, notes, last_modify, operator)
+			values(#{host}, #{weight}, #{app_id}, #{notes}, now(), #{operator})
+		]]>
+	</insert>
+
+	<update id="update" parameterType="domainWeights" flushCache="true">
+		<![CDATA[
+			update domain_weights set
+			host = #{host},
+			weight = #{weight},
+			app_id = #{app_id},
+			notes = #{notes},
+			last_modify = now(),
+			operator = #{operator}
+			where id = #{id}
+		]]>
+	</update>
+
+	<delete id="delete" parameterType="java.lang.Integer" flushCache="true">
+		<![CDATA[
+			delete from domain_weights where id = #{id}
+		]]>
+	</delete>
+</mapper>

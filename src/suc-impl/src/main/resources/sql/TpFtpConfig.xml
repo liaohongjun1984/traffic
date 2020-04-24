@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- "namespace" must be the path of interface, or show error “is not known to the MapperRegistry” when launch -->
+<mapper namespace="com.devops.suc.dao.TpFtpConfigDao">
+	
+	<!-- "id" must be as same as method name of the interface -->
+	<select id="list" resultType="TpFtpConfigVO" parameterType="TpFtpConfigSearchVO" useCache="false">
+		<![CDATA[select * from tp_ftp_config ]]>
+		<where>
+			<if test="ftp_host != null and ftp_host != ''" >
+						<![CDATA[ ftp_host like CONCAT(CONCAT('%', #{ftp_host}),'%') ]]>
+					</if>
+
+		</where>
+				ORDER BY id DESC 
+		<![CDATA[ LIMIT #{start} , #{size}  ]]>
+	</select>
+	
+	<select id="count" resultType="int" parameterType="TpFtpConfigSearchVO" useCache="false">
+		<![CDATA[select count(*) as num from tp_ftp_config ]]>
+		<where>
+			<if test="ftp_host != null and ftp_host != ''" >
+							<![CDATA[ ftp_host like CONCAT(CONCAT('%', #{ftp_host}),'%') ]]>
+								
+			</if>
+		</where>
+	</select>
+	
+	<select id="get" resultType="TpFtpConfig" parameterType="int" useCache="true">
+		<![CDATA[
+			select * from tp_ftp_config where id = #{id}
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="TpFtpConfig" flushCache="true">
+		<![CDATA[
+		insert into tp_ftp_config set 
+						ftp_mark=#{ftp_mark},
+						ftp_host=#{ftp_host},
+						ftp_port=#{ftp_port},
+						ftp_user=#{ftp_user},
+						ftp_pwd=#{ftp_pwd},
+						ftp_dir=#{ftp_dir},
+						create_operator=#{create_operator},
+						create_time=#{create_time},
+						last_modify_operator=#{last_modify_operator},
+						last_modify_time=#{last_modify_time}
+					]]>
+		<selectKey resultType="int" keyProperty="id" order="AFTER"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS id ]]>   
+	    </selectKey> 
+	</insert>
+    
+	<update id="update" parameterType="TpFtpConfig" flushCache="true">
+		<![CDATA[
+		update tp_ftp_config set
+						ftp_mark=#{ftp_mark},
+						ftp_host=#{ftp_host},
+						ftp_port=#{ftp_port},
+						ftp_user=#{ftp_user},
+						ftp_pwd=#{ftp_pwd},
+						ftp_dir=#{ftp_dir},
+						create_operator=#{create_operator},
+						create_time=#{create_time},
+						last_modify_operator=#{last_modify_operator},
+						last_modify_time=#{last_modify_time}
+					where id = #{id}
+		]]>
+	</update>
+    
+	<delete id="delete" parameterType="int" flushCache="true">
+		<![CDATA[
+			DELETE FROM tp_ftp_config WHERE id = #{id}
+		]]>
+	</delete>
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”-->
+<mapper namespace="com.devops.suc.dao.Queue1Dao">
+	
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+	<select id="listQueue" resultType="queue" parameterType="int">
+		<![CDATA[ select * from queue1 where execute_time<= now() order by execute_time asc, queue_id asc limit 0,#{limit} ]]>
+	</select>
+	
+	<select id="count" resultType="int" parameterType="long" >
+		<![CDATA[select count(*) as num from queue1]]>
+	</select>
+	
+	<select id="get" resultType="queue" parameterType="long" >
+		<![CDATA[select * from queue1 where queue_id = #{queue_id} ]]>
+	</select>
+	
+    <insert id="save" parameterType="queue" >
+		<![CDATA[
+			insert into queue1(recipient,cc,subject,message, execute_time, queue_type, create_time, last_modify,data,create_admin)
+			 values(#{recipient}, #{cc},#{subject},#{message},#{execute_time},#{queue_type},now(),now(),#{data},#{create_admin})
+		]]>
+		<selectKey resultType="long" keyProperty="queue_id" order="AFTER"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS queue_id ]]>   
+	    </selectKey> 	
+    </insert>
+    
+    <insert id="batchSave"  >
+    <![CDATA[
+	    insert into queue1(recipient,cc,subject,message, execute_time, queue_type, create_time, last_modify,data,create_admin)
+	    values 
+	    ]]>
+	    <foreach collection="list" index="index" item="queue" separator=",">
+	        <![CDATA[(#{queue.recipient}, #{queue.cc},#{queue.subject},#{queue.message},#{queue.execute_time},#{queue.queue_type},now(),now(),#{queue.data},#{create_admin})]]>
+	    </foreach>
+    </insert>
+    
+    <delete id="deleteQueue" parameterType="java.lang.Long" >
+		<![CDATA[
+			delete from queue1 where queue_id = #{queue_id}
+		]]>
+    </delete>
+</mapper>

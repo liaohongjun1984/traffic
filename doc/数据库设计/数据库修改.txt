@@ -1,0 +1,11 @@
+审核统计表(tp_statistics) 
++ 上传数字段(up_num)
+sql语句： alter table tp_statistics add up_num int comment '每日上传数';
+
+新增tp_download_statistics表
+
+select *,(select *,count(*) as totalNum from tp_deal_logs as temp group by user_id) from tp_deal_logs as a where a.user_id=temp.user_id;
+
+//2016年4月21日 12:58:40
+在tp_upload_temp表里面添加一个check_road_id字段用来存校对后的路口id,新增字段的内容现在是按照路口id进行修改。只要在系统管理里面更新即可
+在下载列表里面新增需求:导出EXCEL，可以根据查询出来的的数据进行导出.

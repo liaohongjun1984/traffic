@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 这里namespace必须是接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”-->
+<mapper namespace="com.devops.suc.dao.RoleDao">
+
+	<!-- 这里的id必须和接口中的方法名相同，不然运行的时候也要报错 -->
+	     
+	<select id="list" resultType="roleVo" parameterType="row">
+		<![CDATA[select r.*,a.name,a.cn_name from role r left join app a on r.app_id = a.app_id where r.role_name != 'admin' ]]>
+		<if test="app_id != null and app_id != ''" >
+	         <![CDATA[and r.app_id=#{app_id} ]]>
+	     </if>
+		<if test="role_name != null and role_name != ''" >
+	         <![CDATA[and r.role_name like CONCAT('%',#{role_name},'%') ]]>
+	    </if>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="count" resultType="int" parameterType="row">
+		<![CDATA[select count(*) from role r left join app a on r.app_id = a.app_id where r.role_name != 'admin' ]]>
+		<if test="app_id != null and app_id != ''" >
+	         <![CDATA[and r.app_id=#{app_id} ]]>
+	     </if>
+		<if test="role_name != null and role_name != ''" >
+	         <![CDATA[and r.role_name like CONCAT('%',#{role_name},'%') ]]>
+	    </if>
+	</select>
+	
+	<insert id="add" parameterType="role">
+		insert into role(role_name,notes,app_id,operator,last_modify)
+		values(#{role_name},#{notes},#{app_id},#{operator},now())
+		<selectKey resultType="int" keyProperty="role_id"> 
+	        <![CDATA[SELECT LAST_INSERT_ID() AS role_id ]]>   
+	    </selectKey> 	
+	</insert>
+	
+	<update id="update" parameterType="row">
+		update role set operator=#{operator},last_modify = now(),role_name=#{role_name},notes=#{notes} where role_id = #{role_id}
+	</update>
+	
+	<insert id="bindUserRole" parameterType="row">
+		insert into user_role_relation(user_id,role_id)values
+		<foreach collection="user_list" item="item" index="index" separator=",">
+        	(#{item},#{role_id})
+    	</foreach>
+	</insert>
+	
+	<update id="deleteRoleUser" parameterType="row">
+		delete from user_role_relation where role_id = #{role_id}
+		<if test ="user_id > 0">
+			and user_id = #{user_id}
+		</if>
+	</update>
+	
+</mapper>
